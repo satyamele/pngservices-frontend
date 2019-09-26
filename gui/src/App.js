@@ -1,21 +1,21 @@
 import React from 'react';
-import {BrowserRouter as Router} from 'react-router-dom';
+import { Router } from 'react-router-dom';
 import BaseRouter from './routes';
-
+import CustomLayout from '../src/containers/Layout';
+import { createBrowserHistory } from 'history';
 import 'antd/dist/antd.css';
-import './App.css';
 
-import CustomLayout from './containers/Layout'
+export const history = createBrowserHistory();
 
 
 function App() {
   return (
     <div className="App">
-      <Router>
-        <CustomLayout>
-          <BaseRouter />
-        </CustomLayout>
-      </Router>
+        <Router history={history}>
+            <CustomLayout>
+                <BaseRouter />
+            </CustomLayout>
+        </Router>
     </div>
   );
 }

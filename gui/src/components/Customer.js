@@ -1,103 +1,114 @@
-import React from 'react';
-import { List, message, Spin } from 'antd';
-import request from 'request';
+import React from "react";
+import {Table, Button, Tag} from 'antd';
+import {history} from "../App";
+import Skeleton from "antd/lib/skeleton";
+import {formatMoney} from "../utility/utility";
 
-import InfiniteScroll from 'react-infinite-scroller';
+class CustomerTable extends React.Component {
+    state = {
+        filteredInfo: null,
+        sortedInfo: null,
+    };
 
-//const listData = 'http://127.0.0.1:8000/api';
-const Customer = (props) => {
-        return(
-                            
+    handleChange = (pagination, filters, sorter) => {
+        console.log('Various parameters', pagination, filters, sorter);
+        this.setState({
+            filteredInfo: filters,
+            sortedInfo: sorter,
+        });
+    };
 
-                class InfiniteListExample extends React.Component {
-                state = {
-                    data: [],
-                    loading: false,
-                    hasMore: true,
-                };
+    clearFilters = () => {
+        this.setState({filteredInfo: null});
+    };
 
-                componentDidMount() {
-                    this.fetchData(res => {
-                    this.setState({
-                        data: res.results,
-                    });
-                    });
-                }
+    clearAll = () => {
+        this.setState({
+            filteredInfo: null,
+            sortedInfo: null,
+        });
+    };
 
-                fetchData = callback => {
-                    request({
-                    url: ('http://127.0.0.1:8000/api'),
-                    type: 'json',
-                    method: 'get',
-                    contentType: 'application/json',
-                    success: res => {
-                        callback(res);
-                    },
-                    });
-                };
+    setAgeSort = () => {
+        this.setState({
+            sortedInfo: {
+                order: 'descend',
+                columnKey: 'investment',
+            },
+        });
+    };
 
-                handleInfiniteOnLoad = () => {
-                    let { data } = this.state;
-                    this.setState({
-                    loading: true,
-                    });
-                    if (data.length > 14) {
-                    message.warning('Infinite List loaded all');
-                    this.setState({
-                        hasMore: false,
-                        loading: false,
-                    });
-                    return;
-                    }
-                    this.fetchData(res => {
-                    data = data.concat(res.results);
-                    this.setState({
-                        data,
-                        loading: false,
-                    });
-                    });
-                };
+    handleRow = ({id}) => {
+        history.push(`/clientDeatils/${id}`);
+    }
 
-                render() {
-                    return (
-                    <div className="demo-infinite-container">
-                        <InfiniteScroll
-                        initialLoad={false}
-                        pageStart={0}
-                        loadMore={this.handleInfiniteOnLoad}
-                        hasMore={!this.state.loading && this.state.hasMore}
-                        useWindow={false}
-                        >
-                        <List
-                            dataSource={props.data}
-                            renderItem={item => (
-                            <List.Item key={item.id}>
-                                <List.Item.Meta
-                                                            
-                                name={item.name}
-                                address={item.address}
-                                contact={item.concat}
-                                mailid={item.maildid}
-                                lastservice={item.lastservice}
-                                />
-                                <div>Content</div>
-                            </List.Item>
-                            )}
-                        >
-                            {this.state.loading && this.state.hasMore && (
-                            <div className="demo-loading-container">
-                                <Spin />
-                            </div>
-                            )}
-                        </List>
-                        </InfiniteScroll>
-                    </div>
-                    );
-                }
-                }
+    render() {
+        let {sortedInfo, filteredInfo} = this.state;
+        sortedInfo = sortedInfo || {};
+        filteredInfo = filteredInfo || {};
+        const {emailFilter, nameFilter, genderFilter} = this.props;
+        const columns = [
+            {
+                title: 'Name',
+                dataIndex: 'name',
+                key: 'name',
+                filters: nameFilter,
+                filteredValue: filteredInfo.name || null,
+                onFilter: (value, record) => record.name.includes(value),
+                sorter: (a, b) => a.name.localeCompare(b.name),
+                sortOrder: sortedInfo.columnKey === 'name' && sortedInfo.order,
+            },
+            {
+                title: 'Investment',
+                dataIndex: 'investment',
+                key: 'investment',
+                sorter: (a, b) =>  a.investment - b.investment,
+                sortOrder: sortedInfo.columnKey === 'investment' && sortedInfo.order,
+                render: text => <Tag color="magenta">{formatMoney(Number(text))}</Tag>,
+            },
+            {
+                title: 'Gender',
+                dataIndex: 'gender',
+                key: 'gender',
+                filters: genderFilter,
+                filteredValue: filteredInfo.gender || null,
+                onFilter: (value, record) => record.gender.includes(value),
+            },
+            {
+                title: 'Emails',
+                dataIndex: 'mailid',
+                key: 'mailid',
+                filters: emailFilter,
+                filteredValue: filteredInfo.mailid || null,
+                onFilter: (value, record) => record.mailid.includes(value),
+            },
+            {
+                title: 'Last service',
+                dataIndex: 'lastservice',
+                key: 'lastservice',
+                sorter: (a, b) => new Date(a.lastservice).getTime() - new Date(b.lastservice).getTime(),
+                sortOrder: sortedInfo.columnKey === 'lastservice' && sortedInfo.order,
+            },
+        ];
 
-
-        )
-
+        return (
+            <div>
+                <div className="table-operations">
+                    <Button onClick={this.setAgeSort}>Sort Investment</Button>
+                    <Button onClick={this.clearFilters}>Clear filters</Button>
+                    <Button onClick={this.clearAll}>Clear filters and sorters</Button>
+                </div>
+                <Table columns={columns} dataSource={this.props.data} onChange={this.handleChange}
+                       onRowClick={this.handleRow} scroll={{ y: 320 }} />
+            </div>
+        );
+    }
 }
-export default Customer; 
+
+const Customer = (props) => {
+    return props.listData.length ?
+        <CustomerTable data={props.listData} emailFilter={props.emailFilter} nameFilter={props.nameFilter} genderFilter={props.genderFilter}/> :
+        <Skeleton active/>
+}
+
+export default Customer;

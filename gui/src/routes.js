@@ -1,13 +1,20 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import CustomerList from './containers/CustomerListView';
-import CustomLayout from './containers/Layout';
-
+import { CustomerDetails } from "./containers/CustomerDetails";
+import { Dashboard } from "./components/Dashboard";
+import { AddClient } from "./components/AddClient";
+import { UpdateClient } from "./components/UpdateTheClient";
 
 const BaseRouter = () =>(
     <div>
-        <Route exact path='' components={CustomLayout}/>
-        <Route exact path='/' components={CustomerList}/>
+       <Switch>
+           <Route exact path='/' component={Dashboard}/>
+           <Route exact path='/clientDeatils/:customerId' component={CustomerDetails}/>
+           <Route exact path='/updateClient/:customerId' component={UpdateClient}/>
+           <Route exact path='/addClients' component={AddClient}/>
+           <Route exact path='/viewClients' component={CustomerList}/>
+       </Switch>
     </div>
 );
 

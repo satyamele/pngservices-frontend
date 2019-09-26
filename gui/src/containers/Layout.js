@@ -1,60 +1,71 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Layout, Menu, Icon } from 'antd';
-import CustomNotifications from '../components/Notification';
-import 'antd/dist/antd.css';
-import '../containers/Layout.css';
-import CustomerList from './CustomerListView';
+import React from "react";
+import {Layout, Menu, Icon} from 'antd';
+import { Link } from "react-router-dom";
+import MyClock from "../components/Clock";
+import styled from 'styled-components';
 
-const { Header, Sider, Content,Footer } = Layout;
+const {Header, Sider, Content} = Layout;
+const StyledClock = styled.div`
+    display: flex;
+    justify-content: space-evenly;
+    time {
+    font-size: 18px;
+    font-family: monospace;
+    font-weight: 800;
+    color: #fff;
+    background: #214f7b;
+    height: 58px;
+    padding: 0px 20px 0px;
+    margin: 3px;
+    width: 121px;
+   }
+   .logo {
+     font-size: 24px;
+    font-family: inherit;
+    font-weight: bolder;
+    color: #fff;
+   }
+}
+`;
 
 
 const CustomLayout = (props) => {
     return (
-                <Layout>
-            <Sider
-            style={{
-                overflow: 'auto',
-                height: '100vh',
-                position: 'fixed',
-                left: 0,
-            }}
-            >
-            <div className="logo" />
-            <Menu theme="dark" mode="inline" defaultSelectedKeys={['4']}>
-                <Menu.Item key="1">
-                <Icon type="home" />
-                <span className="nav-text"><Link to='/'>Dashboard</Link></span>
-                </Menu.Item>
-                <Menu.Item key="2">
-                <Icon type="star" />
-                <span className="nav-text"><Link to='/Form/'>Add Client</Link></span>
-                </Menu.Item>
-                <Menu.Item key="3">
-                <Icon type="mail" />
-                <span className="nav-text"><Link to='/CustomerList'>View Clients</Link></span>
-                </Menu.Item>
-                <Menu.Item key="4">
-                <Icon type="bar-chart" />
-                <span className="nav-text"><Link to='/'>Send Mail</Link></span>
-                </Menu.Item>
-                
-            </Menu>
+        <Layout>
+            <Sider>
+                <div className="logo">P & G SERVICES</div>
+                <Menu theme="light" mode="inline">
+                    <Menu.Item key="1">
+                        <Icon type="dashboard" />
+                        <span><Link to={'/'}>Dashboard</Link></span>
+                    </Menu.Item>
+                    <Menu.Item key="2">
+                        <Icon type="form" />
+                        <span><Link to={'/addClients'}>AddClients</Link></span>
+                    </Menu.Item>
+                    <Menu.Item key="3">
+                        <Icon type="smile" />
+                        <span><Link to={'/viewClients'}>ViewClients</Link></span>
+                    </Menu.Item>
+                </Menu>
             </Sider>
-            <Layout style={{ marginLeft: 200 }}>
-            <Header style={{ background: '#fff', padding: 10, textAlign:'right' }}>
-                <h1 className='companytitle'>P&G Services</h1> <CustomNotifications/>
-            
-            
-            </Header>
-            <Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
-                <div style={{ padding: 24, background: '#fff', textAlign: 'center' }}>
-                   
-                    <CustomerList/>
-                    
-                </div>
-            </Content>
-            <Footer style={{ textAlign: 'center' }}>Designed by Satyam</Footer>
+            <Layout>
+                <Header style={{background: '#1890ff'}}>
+                    <StyledClock>
+                        <MyClock />
+                        <Link to={'/'}><div className={'logo'}>P & G SERVICES</div></Link>
+                    </StyledClock>
+                </Header>
+                <Content
+                    style={{
+                        margin: '24px 16px',
+                        padding: 24,
+                        background: '#fff',
+                        minHeight: '100vh',
+                    }}
+                >
+                    {props.children}
+                </Content>
             </Layout>
         </Layout>
     );
